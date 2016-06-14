@@ -3,7 +3,7 @@ var path = require("path");
 
 module.exports = {
     entry: {
-        dashboard: './resources/assets/js/controllers/dashboard',
+        // Put your webpack entries here
     },
     output: {
         path:          'public/js',
@@ -15,18 +15,7 @@ module.exports = {
         root: [
             path.resolve('./resources/assets/js')
         ],
-        modulesDirectories: [
-            path.resolve('./node_modules'),
-            "bower_components",
-            path.resolve('./resources/assets/assets/plugins'),
-            path.resolve('./public/pages/js'),
-        ],
         alias: {},
-    },
-    resolveLoader: {
-        root: [
-            path.resolve('./node_modules'),
-        ]
     },
     module: {
         loaders: [
@@ -48,12 +37,5 @@ module.exports = {
             },
         ],
     },
-    plugins: [
-        // Map $ and jQuery to `require('jquery')`
-        new webpack.ProvidePlugin({
-            $: "jquery",
-            jQuery: "jquery",
-            "window.jQuery": "jquery"
-        }),
-    ],
+    plugins: [],
 };

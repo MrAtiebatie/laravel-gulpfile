@@ -3,7 +3,9 @@ var elixir = require('laravel-elixir');
 var concat = require('gulp-concat');
 var watch = require("gulp-watch");
 var gutil = require("gulp-util");
-var notifier = require("node-notifier");
+var flatten = require('gulp-flatten');
+var mainBowerFiles = require('main-bower-files');
+var merge = require('merge-stream');
 
 // JavaScript
 var uglify = require('gulp-uglify');
@@ -11,25 +13,35 @@ var minify = require('gulp-minify');
 var webpack = require('webpack');
 
 // CSS
+var sass = require('gulp-sass');
 var less = require('gulp-less');
 var clean = require('gulp-clean-css');
+var autoprefixer = require('gulp-autoprefixer');
 
-var flatten = require('gulp-flatten');
-var mainBowerFiles = require('main-bower-files');
+var paths = {
+    public: 'public/',
+    scripts: ['resources/assets/js/**/*.js', 'resources/assets/js/**/*.vue'],
+    less: 'resources/assets/less/**/*.less',
+    sass: 'resources/assets/sass/**/*.scss',
+}
 
-var dest = 'public/';
+var error = function () {
+    notify({
+        title: 'Failed',
+        message: "Compiling has failed",
+    });
+}
 
 /*
  |--------------------------------------------------------------------------
- | Elixir Asset Management
+ | Vendor related tasks
  |--------------------------------------------------------------------------
  |
- | Elixir provides a clean, fluent API for defining some basic Gulp tasks
- | for your Laravel application. By default, we are compiling the Sass
- | file for our application, as well as publishing vendor resources.
- |
+ | All the vendor tasks, use the mainBowerFiles plugin to
+ | search for the main files from bower components. It will concat all
+ | files to one single vendor file.
  */
-gulp.task('compile:js', function() {
+gulp.task('vendor:js', function() {
 
     var bowerFiles = mainBowerFiles({ filter: new RegExp('.*js$', 'i') });
     console.log(bowerFiles);
@@ -37,50 +49,84 @@ gulp.task('compile:js', function() {
     return gulp.src(bowerFiles)
        .pipe(concat('vendor.js'))
        .pipe(uglify())
-       .pipe(gulp.dest(dest + 'js'));
+       .pipe(gulp.dest(paths.public + 'js'));
 
 });
 
-gulp.task('compile:css', function () {
+gulp.task('vendor:css', function () {
 
-    var bowerFiles = mainBowerFiles({ filter: new RegExp(/(.*)(\.less|\.css)/gi) });
-    console.log(bowerFiles);
+    // LESS files
+    var lessFiles = mainBowerFiles({ filter: new RegExp('.*less$', 'i') });
+    console.log(lessFiles);
 
-    return gulp.src(bowerFiles)
+    var lessStream = gulp.src(lessFiles)
         .pipe(less())
+        .pipe(concat('less-files.css'));
+
+    // SASS files
+    var sassFiles = mainBowerFiles({ filter: new RegExp('.*scss$', 'i') });
+    console.log(sassFiles);
+
+    var sassStream = gulp.src(sassFiles)
+        .pipe(sass())
+        .pipe(concat('sass-files.css'));
+
+    // CSS files
+    var cssFiles = mainBowerFiles({ filter: new RegExp('.*\.css$', 'i') });
+    console.log(cssFiles);
+
+    var cssStream = gulp.src(cssFiles)
+        .pipe(concat('css-files.css'));
+
+    // Concat files
+    return merge(lessStream, sassStream, cssStream)
         .pipe(concat('vendor.css'))
         .pipe(clean())
-        .pipe(gulp.dest(dest + 'css'));
+        .pipe(gulp.dest(paths.public + 'css'));
 
 });
 
-gulp.task('compile:fonts', function () {
+gulp.task('vendor:fonts', function () {
 
     return gulp.src('bower_components/**/fonts/*.{ttf,woff,woff2,eot,eof,svg}')
         .pipe(flatten())
-        .pipe(gulp.dest(dest + 'fonts'));
+        .pipe(gulp.dest(paths.public + 'fonts'));
 
 });
 
-gulp.task("webpack", function() {
-    build();
+/*
+|--------------------------------------------------------------------------
+| Project related tasks
+|--------------------------------------------------------------------------
+|
+| Here we define the project related tasks. This includes compiling
+| all our stylesheet files, wether it's SASS or LESS. The Webpack task
+| is also defined here.
+|
+*/
+gulp.task('compile:sass', function () {
 
-    watch(["./resources/assets/js/**/*.js", "./resources/assets/js/**/*.vue", "./webpack.config.js"], function() {
-        build();
-    });
+    return gulp.src('./resources/assets/sass/app.scss')
+        .pipe(sass().on('error', error))
+        .pipe(autoprefixer())
+        .pipe(concat('app.css'))
+        .pipe(notifier.notify('Success!'))
+        .pipe(gulp.dest(paths.public + 'css'));
 });
 
-/**
- * Build webpack scripts
- */
-function build () {
+gulp.task('compile:less', function () {
+
+    return gulp.src('./resources/assets/less/app.less')
+        .pipe(less())
+        .pipe(autoprefixer())
+        .pipe(concat('app.css'))
+        .pipe(gulp.dest(paths.public + 'css'));
+});
+
+gulp.task("compile:js", function() {
     webpack(require("./webpack.config.js"), function(err, stats) {
         if (err || stats.compilation.missingDependencies.length > 0) {
-            notifier.notify({
-                title: "Webpack",
-                message: "Webpack has failed",
-                icon: "node_modules/laravel-elixir/icons/fail.png"
-            });
+            error();
 
             gutil.log("Webpack missing dependencies:");
             gutil.log(stats.compilation.missingDependencies);
@@ -89,13 +135,16 @@ function build () {
         }
 
         notifier.notify({
-            title: "Webpack",
             message: "Webpack has finished",
             icon: "node_modules/laravel-elixir/icons/laravel.png"
         });
     });
-}
+});
 
-elixir(function(mix) {
-    mix.sass('app.scss');
+gulp.task('watch', function () {
+
+    gulp.watch(paths.scripts, ['compile:js']);
+    gulp.watch(paths.less, ['compile:less']);
+    gulp.watch(paths.sass, ['compile:sass']);
+
 });
