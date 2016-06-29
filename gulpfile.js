@@ -3,6 +3,7 @@ var elixir = require('laravel-elixir');
 var concat = require('gulp-concat');
 var watch = require("gulp-watch");
 var gutil = require("gulp-util");
+var notify = require("gulp-notify");
 var flatten = require('gulp-flatten');
 var mainBowerFiles = require('main-bower-files');
 var merge = require('merge-stream');
@@ -111,7 +112,7 @@ gulp.task('compile:sass', function () {
         .pipe(sass().on('error', error))
         .pipe(autoprefixer())
         .pipe(concat('app.css'))
-        .pipe(notifier.notify('Success!'))
+        .pipe(notify('Success!'))
         .pipe(gulp.dest(paths.public + 'css'));
 });
 
