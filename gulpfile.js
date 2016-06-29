@@ -6,6 +6,8 @@ var gutil = require("gulp-util");
 var flatten = require('gulp-flatten');
 var mainBowerFiles = require('main-bower-files');
 var merge = require('merge-stream');
+var notifier = require('node-notifier');
+var notify = require('gulp-notify');
 
 // JavaScript
 var uglify = require('gulp-uglify');
@@ -25,10 +27,19 @@ var paths = {
     sass: 'resources/assets/sass/**/*.scss',
 }
 
-var error = function () {
-    notify({
+var error = function (error) {
+    gutil.log(error);
+
+    if (typeof error != 'undefined' || typeof error.formated != 'undefined') {
+        error = error.formated;
+    } else {
+        error = error;
+    }
+
+    notifier.notify({
+        icon: 'node_modules/laravel-elixir/icons/fail.png',
         title: 'Failed',
-        message: "Compiling has failed",
+        message: error,
     });
 }
 
@@ -43,7 +54,7 @@ var error = function () {
  */
 gulp.task('vendor:js', function() {
 
-    var bowerFiles = mainBowerFiles({ filter: new RegExp('.*js$', 'i') });
+    var bowerFiles = mainBowerFiles({ filter: new RegExp('.*js$', 'i'), checkExistence: true });
     console.log(bowerFiles);
 
     return gulp.src(bowerFiles)
@@ -72,7 +83,7 @@ gulp.task('vendor:css', function () {
         .pipe(concat('sass-files.css'));
 
     // CSS files
-    var cssFiles = mainBowerFiles({ filter: new RegExp('.*\.css$', 'i') });
+    var cssFiles = mainBowerFiles({ filter: new RegExp('[^\s]+(\.?([^s]css))$', 'i') });
     console.log(cssFiles);
 
     var cssStream = gulp.src(cssFiles)
@@ -110,7 +121,7 @@ gulp.task('compile:sass', function () {
         .pipe(sass().on('error', error))
         .pipe(autoprefixer())
         .pipe(concat('app.css'))
-        .pipe(notifier.notify('Success!'))
+        .pipe(notify('Success!'))
         .pipe(gulp.dest(paths.public + 'css'));
 });
 
@@ -125,11 +136,12 @@ gulp.task('compile:less', function () {
 
 gulp.task("compile:js", function() {
     webpack(require("./webpack.config.js"), function(err, stats) {
-        if (err || stats.compilation.missingDependencies.length > 0) {
+        if (err || stats.compilation.missingDependencies.length > 0 || stats.compilation.errors.length > 0) {
             error();
 
-            gutil.log("Webpack missing dependencies:");
+            gutil.log("Webpack errors:");
             gutil.log(stats.compilation.missingDependencies);
+            gutil.log(stats.compilation.errors[0].message);
 
             return;
         }
@@ -148,3 +160,5 @@ gulp.task('watch', function () {
     gulp.watch(paths.sass, ['compile:sass']);
 
 });
+
+gulp.task('compile:vendor', ['vendor:fonts', 'vendor:css', 'vendor:js']);
