@@ -6,6 +6,7 @@ var gutil = require("gulp-util");
 var flatten = require('gulp-flatten');
 var mainBowerFiles = require('main-bower-files');
 var merge = require('merge-stream');
+var notifier = require('node-notifier');
 
 // JavaScript
 var uglify = require('gulp-uglify');
