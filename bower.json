@@ -1,7 +1,7 @@
 {
   "name": "laravel-webpack",
   "description": "The ultimate gulpfile for a Laravel project",
-  "main": "",
+  "main": "gulpfile.js",
   "authors": [
     "Sjors van Dongen <sitesjors@hotmail.com>"
   ],
