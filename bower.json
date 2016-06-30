@@ -1,0 +1,23 @@
+{
+  "name": "laravel-webpack",
+  "description": "The ultimate gulpfile for a Laravel project",
+  "main": "",
+  "authors": [
+    "Sjors van Dongen <sitesjors@hotmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "laravel",
+    "gulp",
+    "gulpfile"
+  ],
+  "homepage": "https://github.com/MrAtiebatie/laravel-gulpfile",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
