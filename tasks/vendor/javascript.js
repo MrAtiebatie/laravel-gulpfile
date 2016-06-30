@@ -6,5 +6,5 @@ module.exports = function (gulp, plugins, settings) {
     return gulp.src(jsFiles)
        .pipe(plugins.concat('vendor.js'))
        .pipe(plugins.uglify())
-       .pipe(gulp.dest(paths.public + 'js'));
+       .pipe(gulp.dest(settings.dest + 'js'));
 }
