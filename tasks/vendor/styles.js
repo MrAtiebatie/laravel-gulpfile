@@ -24,7 +24,7 @@ module.exports = function (gulp, plugins, settings) {
         .pipe(plugins.concat('css-files.css'));
 
     // Concat files
-    merge(lessStream, sassStream, cssStream)
+    plugins.merge(lessStream, sassStream, cssStream)
         .pipe(plugins.concat('vendor.css'))
         .pipe(plugins.clean())
         .pipe(gulp.dest(settings.dest + 'css'));
