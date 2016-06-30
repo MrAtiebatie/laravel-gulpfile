@@ -7,6 +7,7 @@ var plugins = require('gulp-load-plugins')({
     }
 });
 
+console.log(plugins);
 
 /*
  |--------------------------------------------------------------------------
