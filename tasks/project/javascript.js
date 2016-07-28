@@ -8,8 +8,6 @@ module.exports = function (gulp, plugins, settings) {
             settings.error([err, stats.compilation.missingDependencies, stats.compilation.errors[0].message]);
             return;
         }
-        
-        console.log(plugins.notifier);
 
         plugins.notifier.notify({
             message: "Webpack has finished",
