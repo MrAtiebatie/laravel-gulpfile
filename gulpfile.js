@@ -7,8 +7,6 @@ var plugins = require('gulp-load-plugins')({
     }
 });
 
-console.log(plugins);
-
 /*
  |--------------------------------------------------------------------------
  | User settings
@@ -52,7 +50,7 @@ var settings = {
  * @return {Function}
  */
 function task(task) {
-    return require('./tasks/' + task)(gulp, plugins, settings);
+    return require(path.resolve(settings.bower + '/laravel-gulpfile/tasks/' + task))(gulp, plugins, settings);
 }
 
 /*
