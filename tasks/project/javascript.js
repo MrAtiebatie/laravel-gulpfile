@@ -9,7 +9,7 @@ module.exports = function (gulp, plugins, settings) {
             return;
         }
 
-        notifier.notify({
+        plugins.notifier.notify({
             message: "Webpack has finished",
             icon: "node_modules/laravel-elixir/icons/laravel.png"
         });
