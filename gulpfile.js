@@ -20,7 +20,7 @@ var settings = {
     root: path.resolve('./'),
     bower: 'bower_components',
     webpack: 'webpack.config.js',
-    dest: 'public',
+    dest: 'public/',
     scripts: {
         watch: ['resources/assets/js/**/*.js', 'resources/assets/js/**/*.vue'],
         // Compile source is in the webpack.config.js
