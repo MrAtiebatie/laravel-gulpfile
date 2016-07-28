@@ -1,6 +1,7 @@
 {
   "name": "laravel-gulpfile",
   "description": "The ultimate gulpfile for a Laravel project",
+  "main": "",
   "authors": [
     "Sjors van Dongen <sitesjors@hotmail.com>"
   ],
