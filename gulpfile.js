@@ -35,10 +35,10 @@ var settings = {
         compile: 'resources/assets/sass/app.scss',
     },
     error: function (error) {
-        gutil.log(gutil.colors.red('ERROR', error));
-        new gutil.PluginError('ERROR', error, { showStack: true });
+        plugins.gutil.log(plugins.gutil.colors.red('ERROR', error));
+        new plugins.gutil.PluginError('ERROR', error, { showStack: true });
 
-        notifier.notify({
+        plugins.notifier.notify({
             icon: 'node_modules/laravel-elixir/icons/fail.png',
             title: 'Failed',
             message: error,
