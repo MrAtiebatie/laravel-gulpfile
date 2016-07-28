@@ -4,7 +4,7 @@ var plugins = require('gulp-load-plugins')({
     pattern: ['*'],
     rename: {
         'merge-stream': 'merge',
-        'nodeNotifier': 'notifier',
+        'node-notifier': 'notifier',
     }
 });
 
