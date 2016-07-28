@@ -5,6 +5,7 @@ var plugins = require('gulp-load-plugins')({
     rename: {
         'merge-stream': 'merge',
         'node-notifier': 'notifier',
+        'gulp-util': 'gutil',
     }
 });
 
@@ -55,20 +56,6 @@ function task(task) {
 }
 
 /*
- |--------------------------------------------------------------------------
- | Vendor related tasks
- |--------------------------------------------------------------------------
- |
- | All the vendor tasks, use the mainBowerFiles plugin to
- | search for the main files from bower components. It will concat all
- | files to one single vendor file.
- */
-gulp.task('vendor:js', task('vendor/javascript.js'));
-gulp.task('vendor:css', task('vendor/styles.js'));
-gulp.task('vendor:fonts', task('vendor/fonts.js'));
-gulp.task('compile:vendor', ['vendor:js', 'vendor:css', 'vendor:fonts']);
-
-/*
 |--------------------------------------------------------------------------
 | Project related tasks
 |--------------------------------------------------------------------------
@@ -82,10 +69,26 @@ gulp.task('compile:js', task('project/javascript.js'));
 gulp.task('compile:less', task('project/less.js'));
 gulp.task('compile:sass', task('project/sass.js'));
 
+/*
+ |--------------------------------------------------------------------------
+ | Vendor related tasks
+ |--------------------------------------------------------------------------
+ |
+ | All the vendor tasks, use the mainBowerFiles plugin to
+ | search for the main files from bower components. It will concat all
+ | files to one single vendor file.
+ */
+gulp.task('vendor:js', task('vendor/javascript.js'));
+gulp.task('vendor:css', task('vendor/styles.js'));
+gulp.task('vendor:fonts', task('vendor/fonts.js'));
+gulp.task('compile:vendor', ['vendor:js', 'vendor:css', 'vendor:fonts']);
+
 gulp.task('watch', function () {
 
-    gulp.watch(settings.scripts.watch, 'compile:js');
-    gulp.watch(settings.less.watch, 'compile:less');
-    gulp.watch(settings.sass.watch, 'compile:sass');
+    gulp.watch(settings.scripts.watch, ['compile:js']);
+    gulp.watch(settings.less.watch, ['compile:less']);
+    gulp.watch(settings.sass.watch, ['compile:sass']);
 
 });
+
+gulp.task('default', []);
